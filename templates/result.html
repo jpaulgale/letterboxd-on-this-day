@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Letterboxd: On This Day</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            font-family: Helvetica, sans-serif;
+            text-align: center;
+        }
+        .image-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .image-container img {
+            max-width: 100%;
+            max-height: 600px;
+        }
+        .thumbnail-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .thumbnail {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            margin: 0 10px;
+            cursor: pointer;
+        }
+        .arrow {
+            font-size: 24px;
+            margin: 0 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="image-container">
+        <img id="main-image" src="{{ image1 }}" alt="Generated Image">
+    </div>
+    <div class="thumbnail-container">
+        <i id="left-arrow" class="arrow fas fa-chevron-left" style="display: none;"></i>
+        <img id="thumbnail1" class="thumbnail" src="{{ image1 }}" alt="Thumbnail 1" onclick="showImage('{{ image1 }}')">
+        <img id="thumbnail2" class="thumbnail" src="{{ image2 }}" alt="Thumbnail 2" onclick="showImage('{{ image2 }}')">
+        <i id="right-arrow" class="arrow fas fa-chevron-right"></i>
+    </div>
+
+    <script>
+        function showImage(imagePath) {
+            document.getElementById('main-image').src = imagePath;
+            updateArrows();
+        }
+
+        function showPreviousImage() {
+            var currentImage = document.getElementById('main-image').src;
+            var previousImage = document.getElementById('thumbnail1').src;
+            if (currentImage !== previousImage) {
+                showImage(previousImage);
+            }
+        }
+
+        function showNextImage() {
+            var currentImage = document.getElementById('main-image').src;
+            var nextImage = document.getElementById('thumbnail2').src;
+            if (currentImage !== nextImage) {
+                showImage(nextImage);
+            }
+        }
+
+        function updateArrows() {
+            var currentImage = document.getElementById('main-image').src;
+            var image1 = document.getElementById('thumbnail1').src;
+            var image2 = document.getElementById('thumbnail2').src;
+            
+            if (currentImage === image1) {
+                document.getElementById('left-arrow').style.display = 'none';
+                document.getElementById('right-arrow').style.display = 'inline';
+            } else if (currentImage === image2) {
+                document.getElementById('left-arrow').style.display = 'inline';
+                document.getElementById('right-arrow').style.display = 'none';
+            }
+        }
+
+        document.getElementById('left-arrow').addEventListener('click', showPreviousImage);
+        document.getElementById('right-arrow').addEventListener('click', showNextImage);
+        updateArrows();
+    </script>
+</body>
+</html>
