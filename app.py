@@ -1,4 +1,5 @@
 from flask import Flask, request, send_file, render_template
+from tempfile import NamedTemporaryFile
 from bs4 import BeautifulSoup
 import requests
 from datetime import datetime, timedelta
@@ -419,11 +420,9 @@ def generate():
 
     # Save with timestamp
     time_str = current_date.strftime("%Y-%m-%d_%I%M%p")
-    output_dir = "static/latest_images"
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-    output_file = os.path.join(output_dir, f"{time_str}-frame.png")
-    image.save(output_file)
+    with NamedTemporaryFile(delete=False, suffix=f"{time_str}-frame.png") as temp_file:
+        output_file = temp_file.name
+        image.save(output_file)
 
     movie_still_query, year, movie_still_title = determine_movie_thumbnail_query(final_movie_details)
 
@@ -435,14 +434,11 @@ def generate():
         movie_still_date = f" {year}"
         final_still_with_caption = add_caption(conformed_4_3_still, movie_still_query, movie_still_date, caption_font)
         filename_safe_movie_still_title = make_filename_safe(movie_still_title)
-        output_dir = "static/latest_images/stills"
-        output_file_still = os.path.join(output_dir, f"{time_str}-{filename_safe_movie_still_title}-frame.png")
+        with NamedTemporaryFile(delete=False, suffix=f"{time_str}-{filename_safe_movie_still_title}-frame.png") as temp_file_still:
+            output_file_still = temp_file_still.name
+            final_still_with_caption.save(output_file_still)
 
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
+    return render_template('result.html', image1_url=output_file, image2_url=output_file_still)
 
-        final_still_with_caption.save(output_file_still)
-        return render_template('result.html', image1=output_file, image2=output_file_still)
-    
 if __name__ == '__main__':
     app.run()
